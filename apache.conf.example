@@ -1,0 +1,13 @@
+# Inside the site's HTTPS VirtualHost, before any catch-all ProxyPass.
+ProxyPass /analytics !
+Alias /analytics /var/www/botd-report
+<Directory /var/www/botd-report>
+    Options None
+    AllowOverride None
+    AuthType Basic
+    AuthName "Site analytics"
+    AuthUserFile /etc/apache2/botd-report.passwd
+    Require user owner
+    Header always set Cache-Control "private, no-store"
+</Directory>
+CustomLog "|/var/lib/botd-stats/count.py" "%{%s}t" "expr=%{REQUEST_METHOD} == 'GET' && %{REQUEST_URI} =~ m#^/(index[.]html)?$# && %{REQUEST_STATUS} =~ m#^(200|304)$#"
